@@ -5,35 +5,52 @@ import (
 	"fmt"
 )
 
-// Or return the first result of matching parser
-func Or(parsers ...Parser) Parser {
-	return func(input string) (nextInput string, result any, err error) {
-		for _, parser := range parsers {
-			nextInput, result, err = parser(input)
-			if err == nil {
-				return nextInput, result, err
+// Choice return the first result of matching parser
+func Choice(parsers ...Parser) Parser {
+	return Parser{
+		f: func(input parserInput) (res ParserResult) {
+			for _, parser := range parsers {
+				res = parser.f(input)
+				if res.err == nil {
+					return res
+				}
 			}
-		}
-		return input, result, errors.New("no parser matches")
+			res.err = errors.New("no parser matches")
+			return res
+		},
 	}
 }
 
 // Sequence return the results of running the parsers sequentially in a list.
 // If any fail will return original input and error parser.
 func Sequence(parsers ...Parser) Parser {
-	return func(input string) (string, any, error) {
-		var err error
-		var pRes any
-		origInput := input
-		resultList := []any{}
+	return Parser{
+		f: func(input parserInput) (res ParserResult) {
+			origInput := input
+			resultList := []any{}
 
-		for _, parser := range parsers {
-			input, pRes, err = parser(input)
-			if err != nil {
-				return origInput, []any{}, fmt.Errorf("sequence fail: %w", err)
+			for _, parser := range parsers {
+				res = parser.f(input)
+				if res.err != nil {
+					res.input = origInput
+					res.err = fmt.Errorf("sequence fail: %w", res.err)
+					return res
+				}
+				resultList = append(resultList, res.result)
+				input = res.input
 			}
-			resultList = append(resultList, pRes)
-		}
-		return input, resultList, err
+			res.result = resultList
+			return res
+		},
+	}
+}
+
+func Optional(parser Parser) Parser {
+	return Parser{
+		f: func(input parserInput) ParserResult {
+			res := parser.f(input)
+			res.err = nil
+			return res
+		},
 	}
 }

@@ -10,7 +10,7 @@ func main() {
 	weatherString := g.String("Weather")
 	timeString := g.Sequence(
 		g.String("("),
-		g.Or(
+		g.Choice(
 			g.String("today"),
 			g.String("yesterday"),
 			g.String("one week ago"),
@@ -18,7 +18,7 @@ func main() {
 		g.String(")"),
 	).DropList(0, 2).First()
 
-	weatherType := g.Or(
+	weatherType := g.Choice(
 		g.String("Sunny"),
 		g.String("Cloudy"),
 		g.String("Rain"),
@@ -34,9 +34,8 @@ func main() {
 
 	input := "Weather (today): Sunny"
 
-	input, result, err := parser(input)
+	res := parser.Run(input)
 
-	fmt.Println(input)
-	fmt.Printf("%#v\n", result)
-	fmt.Println(err)
+	fmt.Printf("%#v\n", res.Result())
+	fmt.Println(res.Error())
 }

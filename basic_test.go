@@ -1,8 +1,6 @@
 package gopar
 
-import (
-	"testing"
-)
+import "testing"
 
 func TestString(t *testing.T) {
 	type args struct {
@@ -13,7 +11,7 @@ func TestString(t *testing.T) {
 		name          string
 		args          args
 		wantNextInput string
-		wantResult    string
+		wantResult    any
 		wantErr       bool
 	}{
 		{
@@ -28,6 +26,12 @@ func TestString(t *testing.T) {
 			wantNextInput: "abc",
 		},
 		{
+			name:          "err no match",
+			args:          args{input: "abc123", pattern: "xyz"},
+			wantNextInput: "abc123",
+			wantErr:       true,
+		},
+		{
 			name:          "success",
 			args:          args{input: "abc123", pattern: "abc"},
 			wantNextInput: "123",
@@ -39,17 +43,15 @@ func TestString(t *testing.T) {
 			wantNextInput: "123",
 			wantResult:    "日本語",
 		},
-		{
-			name:          "err no match",
-			args:          args{input: "abc123", pattern: "xyz"},
-			wantNextInput: "abc123",
-			wantErr:       true,
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			parser := String(tt.args.pattern)
-			gotNextInput, gotResult, err := parser(tt.args.input)
+			res := parser.Run(tt.args.input)
+			// gotNextInput, gotResult, err := parser.Run(tt.args.input)
+			gotNextInput := res.input.peekString()
+			gotResult := res.result
+			err := res.err
 
 			if (err != nil) != tt.wantErr {
 				t.Errorf("String() error = %v, wantErr %v", err, tt.wantErr)

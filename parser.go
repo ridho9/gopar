@@ -1,55 +1,24 @@
 package gopar
 
-import "errors"
-
-type Parser func(input string) (string, any, error)
-
-// Droplist(idx0, idx1,...) removes item with given indexes if parser returns a list,
-// otherwise returns error.
-func (p Parser) DropList(indexes ...int) Parser {
-	return func(input string) (string, any, error) {
-		input, res, err := p(input)
-		if err != nil {
-			return input, res, err
-		}
-		resL, ok := res.([]any)
-		if !ok {
-			return input, res, errors.New("result is not a list")
-		}
-
-		droppedResult := []any{}
-		for idx, res := range resL {
-			if len(indexes) == 0 {
-				droppedResult = append(droppedResult, res)
-				continue
-			}
-			if idx == indexes[0] {
-				indexes = indexes[1:]
-				continue
-			}
-			droppedResult = append(droppedResult, res)
-			if idx > indexes[0] {
-				indexes = indexes[1:]
-			}
-		}
-		return input, droppedResult, nil
-	}
+// type Parser func(input string) (string, any, error)
+type Parser struct {
+	f func(input parserInput) ParserResult
 }
 
-func (p Parser) First() Parser {
-	return func(input string) (string, any, error) {
-		input, res, err := p(input)
-		if err != nil {
-			return input, res, err
-		}
-		resL, ok := res.([]any)
-		if !ok {
-			return input, res, errors.New("result is not a list")
-		}
-		if len(resL) == 0 {
-			return input, res, errors.New("empty list")
-		}
+func (p Parser) Run(input string) ParserResult {
+	return p.f(buildInput(input))
+}
 
-		return input, resL[0], nil
-	}
+type ParserResult struct {
+	input  parserInput
+	result any
+	err    error
+}
+
+func (p ParserResult) Result() any {
+	return p.result
+}
+
+func (p ParserResult) Error() any {
+	return p.err
 }
