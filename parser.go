@@ -2,11 +2,11 @@ package gopar
 
 // type Parser func(input string) (string, any, error)
 type Parser struct {
-	f func(input parserInput) ParserResult
+	fn func(input parserInput) ParserResult
 }
 
 func (p Parser) Run(input string) ParserResult {
-	return p.f(buildInput(input))
+	return p.fn(buildInput(input))
 }
 
 type ParserResult struct {

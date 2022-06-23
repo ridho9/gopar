@@ -9,7 +9,7 @@ import (
 // Matches exact string pattern. Parser result is string.
 func String(pattern string) Parser {
 	return Parser{
-		f: func(input parserInput) (res ParserResult) {
+		fn: func(input parserInput) (res ParserResult) {
 			res.lexIdxStart = input.cursor
 			res.lexIdxEnd = input.cursor
 			res.input = input
@@ -46,7 +46,7 @@ func String(pattern string) Parser {
 
 func TakeWhile(pred func(rune) bool) Parser {
 	return Parser{
-		f: func(input parserInput) (res ParserResult) {
+		fn: func(input parserInput) (res ParserResult) {
 			res.lexIdxStart = input.cursor
 			res.lexIdxEnd = input.cursor
 			for {

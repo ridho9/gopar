@@ -13,8 +13,8 @@ func (p Parser) DropList(indexes ...int) Parser {
 		return i < j
 	})
 	return Parser{
-		f: func(input parserInput) ParserResult {
-			res := p.f(input)
+		fn: func(input parserInput) ParserResult {
+			res := p.fn(input)
 			if res.err != nil {
 				return res
 			}
@@ -48,8 +48,8 @@ func (p Parser) DropList(indexes ...int) Parser {
 // Returns the first item if the result is a list, else error.
 func (p Parser) First() Parser {
 	return Parser{
-		f: func(input parserInput) ParserResult {
-			res := p.f(input)
+		fn: func(input parserInput) ParserResult {
+			res := p.fn(input)
 			if res.err != nil {
 				return res
 			}
@@ -71,8 +71,8 @@ func (p Parser) First() Parser {
 
 func (p Parser) Map(mapper func(any) any) Parser {
 	return Parser{
-		f: func(input parserInput) ParserResult {
-			res := p.f(input)
+		fn: func(input parserInput) ParserResult {
+			res := p.fn(input)
 			if res.err != nil {
 				return res
 			}
@@ -84,8 +84,8 @@ func (p Parser) Map(mapper func(any) any) Parser {
 
 func (p Parser) Recognize() Parser {
 	return Parser{
-		f: func(input parserInput) ParserResult {
-			res := p.f(input)
+		fn: func(input parserInput) ParserResult {
+			res := p.fn(input)
 			if res.err != nil {
 				return res
 			}
