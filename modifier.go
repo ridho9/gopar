@@ -2,6 +2,7 @@ package gopar
 
 import (
 	"errors"
+	"fmt"
 	"sort"
 )
 
@@ -76,6 +77,20 @@ func (p Parser) Map(mapper func(any) any) Parser {
 				return res
 			}
 			res.result = mapper(res.result)
+			return res
+		},
+	}
+}
+
+func (p Parser) Recognize() Parser {
+	return Parser{
+		f: func(input parserInput) ParserResult {
+			res := p.f(input)
+			if res.err != nil {
+				return res
+			}
+			fmt.Println(res.lexIdxStart, res.lexIdxEnd, res.Lex())
+			res.result = res.Lex()
 			return res
 		},
 	}

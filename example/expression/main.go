@@ -21,10 +21,10 @@ func main() {
 				pNumber,
 			),
 		),
-	)
+	).Recognize()
 
 	parser := pFloat
-	input := "123"
+	input := "123.45"
 	res := parser.Run(input)
-	fmt.Printf("%#v err: %e\n", res.Result(), res.Error())
+	fmt.Printf("%#v\nerr: %e\n", res.Result(), res.Error())
 }

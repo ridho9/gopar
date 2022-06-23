@@ -50,3 +50,7 @@ func (pi *parserInput) peekStringLen(len int) string {
 func (pi *parserInput) peekString() string {
 	return pi.text[pi.cursor:]
 }
+
+func (pi parserInput) peekRange(startIdx int, endIdx int) string {
+	return pi.text[startIdx:endIdx]
+}

@@ -10,9 +10,11 @@ func (p Parser) Run(input string) ParserResult {
 }
 
 type ParserResult struct {
-	input  parserInput
-	result any
-	err    error
+	input       parserInput
+	result      any
+	lexIdxStart int
+	lexIdxEnd   int
+	err         error
 }
 
 func (p ParserResult) Result() any {
@@ -21,4 +23,8 @@ func (p ParserResult) Result() any {
 
 func (p ParserResult) Error() any {
 	return p.err
+}
+
+func (p ParserResult) Lex() string {
+	return p.input.peekRange(p.lexIdxStart, p.lexIdxEnd)
 }

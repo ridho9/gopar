@@ -10,6 +10,8 @@ import (
 func String(pattern string) Parser {
 	return Parser{
 		f: func(input parserInput) (res ParserResult) {
+			res.lexIdxStart = input.cursor
+			res.lexIdxEnd = input.cursor
 			res.input = input
 			if input.len() == 0 {
 				res.err = ErrEndOfInput
@@ -36,6 +38,7 @@ func String(pattern string) Parser {
 
 			res.result = input.takeSpan()
 			res.input = input
+			res.lexIdxEnd = input.cursor
 			return res
 		},
 	}
@@ -44,6 +47,8 @@ func String(pattern string) Parser {
 func TakeWhile(pred func(rune) bool) Parser {
 	return Parser{
 		f: func(input parserInput) (res ParserResult) {
+			res.lexIdxStart = input.cursor
+			res.lexIdxEnd = input.cursor
 			for {
 				if input.len() == 0 {
 					break
@@ -57,6 +62,7 @@ func TakeWhile(pred func(rune) bool) Parser {
 			}
 			res.result = input.takeSpan()
 			res.input = input
+			res.lexIdxEnd = input.cursor
 			return res
 		},
 	}

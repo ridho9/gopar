@@ -28,6 +28,7 @@ func Sequence(parsers ...Parser) Parser {
 		f: func(input parserInput) (res ParserResult) {
 			origInput := input
 			resultList := []any{}
+			lexIdxStart := origInput.cursor
 
 			for _, parser := range parsers {
 				res = parser.f(input)
@@ -40,6 +41,7 @@ func Sequence(parsers ...Parser) Parser {
 				input = res.input
 			}
 			res.result = resultList
+			res.lexIdxStart = lexIdxStart
 			return res
 		},
 	}

@@ -13,6 +13,8 @@ func TestString(t *testing.T) {
 		wantNextInput string
 		wantResult    any
 		wantErr       bool
+		wantLexStart  int
+		wantLexEnd    int
 	}{
 		{
 			name:    "err if input empty",
@@ -36,12 +38,14 @@ func TestString(t *testing.T) {
 			args:          args{input: "abc123", pattern: "abc"},
 			wantNextInput: "123",
 			wantResult:    "abc",
+			wantLexEnd:    3,
 		},
 		{
 			name:          "success utf8",
 			args:          args{input: "日本語123", pattern: "日本語"},
 			wantNextInput: "123",
 			wantResult:    "日本語",
+			wantLexEnd:    9,
 		},
 	}
 	for _, tt := range tests {
@@ -51,6 +55,7 @@ func TestString(t *testing.T) {
 			// gotNextInput, gotResult, err := parser.Run(tt.args.input)
 			gotNextInput := res.input.peekString()
 			gotResult := res.result
+			gotLexEnd := res.lexIdxEnd
 			err := res.err
 
 			if (err != nil) != tt.wantErr {
@@ -62,6 +67,9 @@ func TestString(t *testing.T) {
 			}
 			if gotResult != tt.wantResult {
 				t.Errorf("String() gotResult = %v, want %v", gotResult, tt.wantResult)
+			}
+			if gotLexEnd != tt.wantLexEnd {
+				t.Errorf("String() gotLexEnd = %v, want %v", gotLexEnd, tt.wantLexEnd)
 			}
 		})
 	}
@@ -98,7 +106,6 @@ func TestTakeWhile(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			parser := TakeWhile(pred)
 			res := parser.Run(tt.args.input)
-			// gotNextInput, gotResult, err := parser.Run(tt.args.input)
 			gotNextInput := res.input.peekString()
 			gotResult := res.result
 			err := res.err
