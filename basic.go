@@ -23,17 +23,38 @@ func String(pattern string) Parser {
 
 			for pCursor, w := 0, 0; pCursor < len(pattern); pCursor += w {
 				pRune, width := utf8.DecodeRuneInString(pattern[pCursor:])
-				iRune, _ := input.peekRune()
+				iRune, iW := input.popRune()
 				if iRune == pRune {
 					w = width
-					input.advCursor(w)
 					continue
 				} else {
-					res.err = fmt.Errorf(`expected "%s" found "%s"`, pattern, input.peekStringLen(len(pattern)))
+					input.rwdCursor(iW)
+					res.err = fmt.Errorf(`expected "%s" found "%s..."`, pattern, input.peekStringLen(len(pattern)))
 					return res
 				}
 			}
 
+			res.result = input.takeSpan()
+			res.input = input
+			return res
+		},
+	}
+}
+
+func TakeWhile(pred func(rune) bool) Parser {
+	return Parser{
+		f: func(input parserInput) (res ParserResult) {
+			for {
+				if input.len() == 0 {
+					break
+				}
+
+				iRune, iW := input.popRune()
+				if !pred(iRune) {
+					input.rwdCursor(iW)
+					break
+				}
+			}
 			res.result = input.takeSpan()
 			res.input = input
 			return res

@@ -49,7 +49,10 @@ func Optional(parser Parser) Parser {
 	return Parser{
 		f: func(input parserInput) ParserResult {
 			res := parser.f(input)
-			res.err = nil
+			if res.err != nil {
+				res.result = nil
+				res.err = nil
+			}
 			return res
 		},
 	}

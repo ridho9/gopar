@@ -66,3 +66,53 @@ func TestString(t *testing.T) {
 		})
 	}
 }
+
+func TestTakeWhile(t *testing.T) {
+	pred := func(r rune) bool {
+		return ('a' <= r) && (r <= 'z')
+	}
+	type args struct {
+		input string
+	}
+	tests := []struct {
+		name          string
+		args          args
+		wantNextInput string
+		wantResult    any
+		wantErr       bool
+	}{
+		{
+			name:          "success > 1",
+			args:          args{input: "abc123"},
+			wantNextInput: "123",
+			wantResult:    "abc",
+		},
+		{
+			name:          "success empty",
+			args:          args{input: "123"},
+			wantNextInput: "123",
+			wantResult:    "",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			parser := TakeWhile(pred)
+			res := parser.Run(tt.args.input)
+			// gotNextInput, gotResult, err := parser.Run(tt.args.input)
+			gotNextInput := res.input.peekString()
+			gotResult := res.result
+			err := res.err
+
+			if (err != nil) != tt.wantErr {
+				t.Errorf("String() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if gotNextInput != tt.wantNextInput {
+				t.Errorf("String() gotNextInput = %v, want %v", gotNextInput, tt.wantNextInput)
+			}
+			if gotResult != tt.wantResult {
+				t.Errorf("String() gotResult = %v, want %v", gotResult, tt.wantResult)
+			}
+		})
+	}
+}

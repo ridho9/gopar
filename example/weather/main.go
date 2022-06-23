@@ -21,6 +21,7 @@ func main() {
 	weatherType := g.Choice(
 		g.String("Sunny"),
 		g.String("Cloudy"),
+		g.String("Rainy"),
 		g.String("Rain"),
 	)
 
@@ -32,7 +33,7 @@ func main() {
 		weatherType,
 	).DropList(1, 3)
 
-	input := "Weather (today): Sunny"
+	input := "Weather (today): Rainy"
 
 	res := parser.Run(input)
 

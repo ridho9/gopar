@@ -67,3 +67,16 @@ func (p Parser) First() Parser {
 		},
 	}
 }
+
+func (p Parser) Map(mapper func(any) any) Parser {
+	return Parser{
+		f: func(input parserInput) ParserResult {
+			res := p.f(input)
+			if res.err != nil {
+				return res
+			}
+			res.result = mapper(res.result)
+			return res
+		},
+	}
+}

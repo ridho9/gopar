@@ -22,12 +22,19 @@ func (pi parserInput) len() int {
 	return pi.textLen - pi.cursor
 }
 
-func (pi parserInput) peekRune() (rune, int) {
-	return utf8.DecodeRuneInString(pi.text[pi.cursor:])
+func (pi parserInput) peekRune() rune {
+	r, _ := utf8.DecodeRuneInString(pi.text[pi.cursor:])
+	return r
 }
 
-func (pi *parserInput) advCursor(dif int) {
-	pi.cursor += dif
+func (pi *parserInput) popRune() (rune, int) {
+	r, w := utf8.DecodeRuneInString(pi.text[pi.cursor:])
+	pi.cursor += w
+	return r, w
+}
+
+func (pi *parserInput) rwdCursor(dif int) {
+	pi.cursor -= dif
 }
 
 func (pi *parserInput) takeSpan() string {
