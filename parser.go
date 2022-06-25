@@ -6,11 +6,6 @@ func (p Parser) Run(input string) ParserResult {
 	return p(buildInput(input))
 }
 
-func (p Parser) R(input ParserInput) (ParserInput, any, error) {
-	res := p(input)
-	return res.input, res.result, res.err
-}
-
 func Ref(p *Parser) Parser {
 	return func(input ParserInput) ParserResult {
 		return (*p)(input)
