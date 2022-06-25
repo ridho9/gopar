@@ -2,48 +2,7 @@ package gopar
 
 import (
 	"errors"
-	"fmt"
-	"sort"
 )
-
-// Droplist(idx0, idx1,...) removes item with given indexes if parser returns a list,
-// otherwise returns error.
-func (p Parser) DropList(indexes ...int) Parser {
-	sort.Slice(indexes, func(i, j int) bool {
-		return i < j
-	})
-	return Parser{
-		fn: func(input parserInput) ParserResult {
-			res := p.fn(input)
-			if res.err != nil {
-				return res
-			}
-			resL, ok := res.result.([]any)
-			if !ok {
-				res.err = errors.New("result is not a list")
-				return res
-			}
-
-			droppedResult := []any{}
-			for idx, res := range resL {
-				if len(indexes) == 0 {
-					droppedResult = append(droppedResult, res)
-					continue
-				}
-				if idx == indexes[0] {
-					indexes = indexes[1:]
-					continue
-				}
-				droppedResult = append(droppedResult, res)
-				if idx > indexes[0] {
-					indexes = indexes[1:]
-				}
-			}
-			res.result = droppedResult
-			return res
-		},
-	}
-}
 
 // Returns the first item if the result is a list, else error.
 func (p Parser) First() Parser {
@@ -82,6 +41,13 @@ func (p Parser) Map(mapper func(any) any) Parser {
 	}
 }
 
+func (p Parser) TakeNth(n int) Parser {
+	return p.Map(func(a any) any {
+		al := a.([]any)
+		return al[n]
+	})
+}
+
 func (p Parser) Recognize() Parser {
 	return Parser{
 		fn: func(input parserInput) ParserResult {
@@ -89,7 +55,6 @@ func (p Parser) Recognize() Parser {
 			if res.err != nil {
 				return res
 			}
-			fmt.Println(res.lexIdxStart, res.lexIdxEnd, res.Lex())
 			res.result = res.Lex()
 			return res
 		},

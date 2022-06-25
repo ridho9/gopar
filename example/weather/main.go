@@ -16,7 +16,7 @@ func main() {
 			g.String("one week ago"),
 		),
 		g.String(")"),
-	).DropList(0, 2).First()
+	).TakeNth(1)
 
 	weatherType := g.Choice(
 		g.String("Sunny"),
@@ -31,7 +31,7 @@ func main() {
 		timeString,
 		g.String(": "),
 		weatherType,
-	).DropList(1, 3)
+	)
 
 	input := "Weather (today): Rainy"
 

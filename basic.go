@@ -44,7 +44,7 @@ func String(pattern string) Parser {
 	}
 }
 
-func TakeWhile(pred func(rune) bool) Parser {
+func TakeWhile0(pred func(rune) bool) Parser {
 	return Parser{
 		fn: func(input parserInput) (res ParserResult) {
 			res.lexIdxStart = input.cursor
@@ -61,6 +61,36 @@ func TakeWhile(pred func(rune) bool) Parser {
 				}
 			}
 			res.result = input.takeSpan()
+			res.input = input
+			res.lexIdxEnd = input.cursor
+			return res
+		},
+	}
+}
+
+func TakeWhile1(pred func(rune) bool) Parser {
+	return Parser{
+		fn: func(input parserInput) (res ParserResult) {
+			res.lexIdxStart = input.cursor
+			res.lexIdxEnd = input.cursor
+			for {
+				if input.len() == 0 {
+					break
+				}
+
+				iRune, iW := input.popRune()
+				if !pred(iRune) {
+					input.rwdCursor(iW)
+					break
+				}
+			}
+			span := input.takeSpan()
+			if span == "" {
+				res.err = errors.New("TakeWhile1 fail")
+				return res
+			}
+
+			res.result = span
 			res.input = input
 			res.lexIdxEnd = input.cursor
 			return res

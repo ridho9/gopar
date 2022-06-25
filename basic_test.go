@@ -104,7 +104,7 @@ func TestTakeWhile(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			parser := TakeWhile(pred)
+			parser := TakeWhile0(pred)
 			res := parser.Run(tt.args.input)
 			gotNextInput := res.input.peekString()
 			gotResult := res.result

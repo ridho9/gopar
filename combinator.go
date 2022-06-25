@@ -61,5 +61,26 @@ func Optional(parser Parser) Parser {
 }
 
 func Delim(p1 Parser, p2 Parser, p3 Parser) Parser {
-	return Sequence(p1, p2, p3).DropList(0, 2).First()
+	return Sequence(p1, p2, p3).TakeNth(1)
+}
+
+func Many0(p Parser) Parser {
+	return Parser{
+		fn: func(input parserInput) (res ParserResult) {
+			lexIdxStart := input.cursor
+			resultList := []any{}
+			for {
+				res = p.fn(input)
+				if res.err != nil {
+					res.err = nil
+					break
+				}
+				resultList = append(resultList, res.result)
+				input = res.input
+			}
+			res.result = resultList
+			res.lexIdxStart = lexIdxStart
+			return res
+		},
+	}
 }
