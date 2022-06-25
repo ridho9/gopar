@@ -9,6 +9,14 @@ func (p Parser) Run(input string) ParserResult {
 	return p.fn(buildInput(input))
 }
 
+func Ref(p *Parser) Parser {
+	return Parser{
+		fn: func(input parserInput) ParserResult {
+			return p.fn(input)
+		},
+	}
+}
+
 type ParserResult struct {
 	input       parserInput
 	result      any
