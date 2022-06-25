@@ -2,15 +2,15 @@ package gopar
 
 import "unicode/utf8"
 
-type parserInput struct {
+type ParserInput struct {
 	text      string
 	textLen   int
 	cursor    int
 	spanStart int
 }
 
-func buildInput(text string) parserInput {
-	return parserInput{
+func buildInput(text string) ParserInput {
+	return ParserInput{
 		text:      text,
 		textLen:   len(text),
 		cursor:    0,
@@ -18,39 +18,39 @@ func buildInput(text string) parserInput {
 	}
 }
 
-func (pi parserInput) len() int {
+func (pi ParserInput) len() int {
 	return pi.textLen - pi.cursor
 }
 
-func (pi parserInput) peekRune() rune {
+func (pi ParserInput) peekRune() rune {
 	r, _ := utf8.DecodeRuneInString(pi.text[pi.cursor:])
 	return r
 }
 
-func (pi *parserInput) popRune() (rune, int) {
+func (pi *ParserInput) popRune() (rune, int) {
 	r, w := utf8.DecodeRuneInString(pi.text[pi.cursor:])
 	pi.cursor += w
 	return r, w
 }
 
-func (pi *parserInput) rwdCursor(dif int) {
+func (pi *ParserInput) rwdCursor(dif int) {
 	pi.cursor -= dif
 }
 
-func (pi *parserInput) takeSpan() string {
+func (pi *ParserInput) takeSpan() string {
 	res := pi.text[pi.spanStart:pi.cursor]
 	pi.spanStart = pi.cursor
 	return res
 }
 
-func (pi *parserInput) peekStringLen(len int) string {
+func (pi *ParserInput) peekStringLen(len int) string {
 	return pi.text[pi.cursor : pi.cursor+len]
 }
 
-func (pi *parserInput) peekString() string {
+func (pi *ParserInput) peekString() string {
 	return pi.text[pi.cursor:]
 }
 
-func (pi parserInput) peekRange(startIdx int, endIdx int) string {
+func (pi ParserInput) peekRange(startIdx int, endIdx int) string {
 	return pi.text[startIdx:endIdx]
 }

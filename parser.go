@@ -1,24 +1,24 @@
 package gopar
 
-// type Parser func(input string) (string, any, error)
-type Parser struct {
-	fn func(input parserInput) ParserResult
-}
+type Parser func(input ParserInput) ParserResult
 
 func (p Parser) Run(input string) ParserResult {
-	return p.fn(buildInput(input))
+	return p(buildInput(input))
+}
+
+func (p Parser) R(input ParserInput) (ParserInput, any, error) {
+	res := p(input)
+	return res.input, res.result, res.err
 }
 
 func Ref(p *Parser) Parser {
-	return Parser{
-		fn: func(input parserInput) ParserResult {
-			return p.fn(input)
-		},
+	return func(input ParserInput) ParserResult {
+		return (*p)(input)
 	}
 }
 
 type ParserResult struct {
-	input       parserInput
+	input       ParserInput
 	result      any
 	lexIdxStart int
 	lexIdxEnd   int
@@ -29,10 +29,14 @@ func (p ParserResult) Result() any {
 	return p.result
 }
 
+func (p ParserResult) Input() ParserInput {
+	return p.input
+}
+
 func (p ParserResult) Error() any {
 	return p.err
 }
 
-func (p ParserResult) Lex() string {
+func (p ParserResult) lex() string {
 	return p.input.peekRange(p.lexIdxStart, p.lexIdxEnd)
 }
