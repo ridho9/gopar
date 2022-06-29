@@ -79,6 +79,7 @@ func Many0(p Parser) Parser {
 
 func EOF() Parser {
 	return func(input ParserInput) (res ParserResult) {
+		res.input = input
 		if input.cursor < input.textLen {
 			res.err = fmt.Errorf("expected end of input")
 			return res

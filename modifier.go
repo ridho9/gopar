@@ -54,3 +54,14 @@ func (p Parser) Recognize() Parser {
 		return res
 	}
 }
+
+func (p Parser) Value(v any) Parser {
+	return func(input ParserInput) ParserResult {
+		res := p(input)
+		if res.err != nil {
+			return res
+		}
+		res.result = v
+		return res
+	}
+}
