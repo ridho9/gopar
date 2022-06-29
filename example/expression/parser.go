@@ -27,8 +27,7 @@ func init() {
 				g.String("."),
 				pNumber,
 			),
-		),
-	).
+		)).
 		Recognize().
 		Map(func(a any) any {
 			num, _ := strconv.ParseFloat(a.(string), 64)
@@ -67,7 +66,7 @@ func init() {
 		),
 	).Map(packBinOp)
 
-	parser = pTerm
+	parser = g.Sequence(pTerm, g.EOF()).First()
 }
 
 func litWrap(p g.Parser) g.Parser {

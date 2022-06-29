@@ -8,7 +8,7 @@ import (
 // http://www.craftinginterpreters.com/parsing-expressions.html.
 
 func main() {
-	input := `1 + 1 * -2 / a3`
+	input := `1 + 1 * -2 / 3`
 	res := parser.Run(input)
 	fmt.Printf("%v\nerr: %e\n", res.Result(), res.Error())
 }
